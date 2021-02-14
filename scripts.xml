@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MudletPackage>
+<MudletPackage version="1.001">
+	<ScriptPackage>
+		<Script isActive="yes" isFolder="no">
+			<name>CPC_Main_Script</name>
+			<packageName></packageName>
+			<script>cpc = cpc or {}
+cpc.version = "0.0.1"
+cpc.debug = cpc.debug or false
+cpc.localEcho = cpc.localEcho or true
+cpc.thisProfileName = getProfileName():lower()
+
+
+function cpc:log(text)
+  if cpc.debug==true then
+    debugc("CPC:"..text)
+  end
+end
+
+function cpc:syntax(text)
+  cecho("&lt;orange&gt;"..text)
+end
+
+function cpc:echo(text)
+  if cpc.localEcho==true then
+    cecho("&lt;cyan&gt;"..text)
+    print()
+  end
+end
+
+function cpc:handleCommand(cmd,args)
+  
+  cpc:log("CPC: Handle command")
+  cpc:log("cmd:'"..cmd.."'")
+  cpc:log("args:'"..args.."'")
+  cmd = string.lower(cmd)
+  
+  if (cmd=="help") then
+    cecho("&lt;cyan&gt;Scripting Coomands:\n")
+    cecho("&lt;cyan&gt; #HELP \t\t\t\t this help\n")
+    cecho("&lt;cyan&gt; #ALL &lt;arguments&gt;\t\t send command to all profiles\n")
+    cecho("&lt;cyan&gt; #DO &lt;arguments&gt;\t\t send command to all other profiles\n")
+    cecho("&lt;cyan&gt;  #DO party report\t\t\t ask all other profiles to execute 'party report'\n")
+    cecho("&lt;cyan&gt; #BID &lt;name&gt; &lt;arguments&gt;\t\t send command to one character (PRIORITY)\n")
+    cecho("&lt;cyan&gt;  #BID gandalf say hello\t\t\t ask Gandalf to say hello\n")
+  elseif (cmd=="all") then
+    if args ~= "" then
+      -- Send event to all profiles, including self
+      raiseGlobalEvent("cpc_all",args)
+      raiseEvent("cpc_all",args)
+    else
+      cpc:syntax("#ALL must be called with an argument, e.g. '#ALL say hi'")
+    end
+  elseif (cmd=="do") then
+    -- Only send event to other profiles, otherwise same as #ALL
+    raiseGlobalEvent("cpc_all",args)
+    
+  elseif (cmd=="bid") then
+    raiseGlobalEvent("cpc_bid",args)
+    raiseEvent("cpc_bid",args)
+  end
+end
+
+function cpc:onCmdAll(event,arg,profile)
+  cpc:log("onCmdAll()")
+  --cpc:log("Event: " .. event)
+  cpc:log("Arg  : " .. arg)
+  -- If the event is not raised with raiseGlobalEvent() profile will be 'nil'
+  --echo("Profile: " .. (profile or "Local") .. "\n")
+  
+  cpc:echo((profile or "Local") .. " asked everyone to '" .. arg.."'")
+  expandAlias(arg) 
+end
+
+function cpc:onBidEvent(event,arg,profile)
+  local words = {}
+  words[1], words[2] = arg:match("(%w+)(.+)")
+  local targetProfile = words[1]:lower()
+  local cmd = words[2]
+  -- strip leading and trailing whitespace
+  cmd = string.gsub(cmd, '^%s*(.-)%s*$', '%1')
+  
+  --cpc:log("Tell " .. words[1] .. " to execute '" .. cmd.."'")
+  cpc:log("Tell &lt;" .. targetProfile .. "&gt; to execute '" .. cmd.."'")
+  
+  if profile == nil then
+    profile = "Local"
+  end
+  if cpc.thisProfileName == targetProfile then
+    cpc:echo("&lt;cyan&gt;" .. profile .. " bad me execute '" .. cmd .. "'")
+    expandAlias(cmd)
+  end
+end
+
+-- CPC Event handlers
+cpc.allEventHandler = cpc.allEventHandler or nil
+cpc.bidEventHandler = cpc.bidEventHandler or nil
+
+
+-- remove existing event handlers before creating new ones
+if cpc.allEventHandler~=nil then
+  killAnonymousEventHandler(cpc.allEventHandler)
+end
+if cpc.bidEventHandler~=nil then
+  killAnonymousEventHandler(cpc.bidEventHandler)
+end
+
+-- setup event handlers
+cpc.allEventHandler = registerAnonymousEventHandler("cpc_all","cpc:onCmdAll")
+cpc.bidEventHandler = registerAnonymousEventHandler("cpc_bid","cpc:onBidEvent")</script>
+			<eventHandlerList />
+		</Script>
+	</ScriptPackage>
+</MudletPackage>

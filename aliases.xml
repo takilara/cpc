@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MudletPackage>
+<MudletPackage version="1.001">
+	<AliasPackage>
+		<Alias isActive="yes" isFolder="no">
+			<name>Capture legal commands</name>
+			<script>local cmd = matches[2]
+local args = matches[3]
+
+cpc:handleCommand(cmd,args)</script>
+			<command></command>
+			<packageName></packageName>
+			<regex>#(?i)(\bbid\b|\bdo\b|\bsay\b|\ball\b|\bhelp\b)(?-i)\s*(.*)$</regex>
+		</Alias>
+	</AliasPackage>
+</MudletPackage>
