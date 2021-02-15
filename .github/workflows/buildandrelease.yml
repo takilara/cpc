@@ -17,6 +17,9 @@ jobs:
         id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
+      - name Echo the version
+        run: echo ${{ steps.get_version.VERSION }}
+
       - name: Make zip file
         run: |
           mkdir build -p
