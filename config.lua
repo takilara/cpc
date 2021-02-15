@@ -1,1 +1,1 @@
-mpackage = "cpc"
+mpackage = "Cross Profile Communication"
