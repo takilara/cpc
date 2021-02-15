@@ -112,4 +112,16 @@ cpc.bidEventHandler = registerAnonymousEventHandler("cpc_bid","cpc:onBidEvent")<
 			<eventHandlerList />
 		</Script>
 	</ScriptPackage>
+  <AliasPackage>
+		<Alias isActive="yes" isFolder="no">
+			<name>Capture legal commands</name>
+			<script>local cmd = matches[2]
+local args = matches[3]
+
+cpc:handleCommand(cmd,args)</script>
+			<command></command>
+			<packageName></packageName>
+			<regex>#(?i)(\bbid\b|\bdo\b|\bsay\b|\ball\b|\bhelp\b)(?-i)\s*(.*)$</regex>
+		</Alias>
+	</AliasPackage>
 </MudletPackage>
