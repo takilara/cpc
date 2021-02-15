@@ -27,7 +27,7 @@ jobs:
       - name: Make zip file
         run: |
           mkdir build -p
-          sed -i 's/cpc.version = "0.0.0"/cpc.version = "${{ steps.create_release.outputs.name }}"/g' cpc.xml
+          sed -i 's/cpc.version = "0.0.0"/cpc.version = "${{ steps.create_release.inputs.tag_name }}"/g' cpc.xml
           zip --junk-paths build/cpc.mpackage README.md cpc.xml LICENSE config.lua
   
       - name: Upload Release Asset
