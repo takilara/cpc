@@ -19,9 +19,6 @@ jobs:
         #run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
         run: echo ::set-output name=version::${GITHUB_REF#refs/*/}
 
-      - name: Echo the version
-        run: echo ${{ steps.get_version.outputs.version }}
-
       - name: Make zip file
         run: |
           mkdir build -p
@@ -37,7 +34,7 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           draft: false
-          prerelease: true
+          prerelease: false
 
       - name: Upload Release Asset
         id: upload-release-asset 
