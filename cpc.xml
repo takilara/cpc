@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE MudletPackage>
 <MudletPackage version="1.001">
+	<TriggerPackage />
+	<TimerPackage />
+	<AliasPackage>
+		<Alias isActive="yes" isFolder="no">
+			<name>Capture legal commands</name>
+			<script>local cmd = matches[2]
+local args = matches[3]
+
+cpc:handleCommand(cmd,args)</script>
+			<command></command>
+			<packageName></packageName>
+			<regex>#(?i)(\bbid\b|\bdo\b|\bsay\b|\ball\b|\bhelp\b)(?-i)\s*(.*)$</regex>
+		</Alias>
+	</AliasPackage>
+	<ActionPackage />
 	<ScriptPackage>
 		<Script isActive="yes" isFolder="no">
 			<name>CPC_Main_Script</name>
@@ -112,16 +127,8 @@ cpc.bidEventHandler = registerAnonymousEventHandler("cpc_bid","cpc:onBidEvent")<
 			<eventHandlerList />
 		</Script>
 	</ScriptPackage>
-  <AliasPackage>
-		<Alias isActive="yes" isFolder="no">
-			<name>Capture legal commands</name>
-			<script>local cmd = matches[2]
-local args = matches[3]
-
-cpc:handleCommand(cmd,args)</script>
-			<command></command>
-			<packageName></packageName>
-			<regex>#(?i)(\bbid\b|\bdo\b|\bsay\b|\ball\b|\bhelp\b)(?-i)\s*(.*)$</regex>
-		</Alias>
-	</AliasPackage>
+	<KeyPackage />
+	<HelpPackage>
+		<helpURL></helpURL>
+	</HelpPackage>
 </MudletPackage>
