@@ -21,7 +21,7 @@ cpc:handleCommand(cmd,args)</script>
 			<name>CPC_Main_Script</name>
 			<packageName></packageName>
 			<script>cpc = cpc or {}
-cpc.version = "0.0.1"
+cpc.version = "0.0.5"
 cpc.debug = cpc.debug or false
 cpc.localEcho = cpc.localEcho or true
 cpc.thisProfileName = getProfileName():lower()
