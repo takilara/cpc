@@ -15,7 +15,7 @@ jobs:
       - name: Make zip file
         run: |
           mkdir build -p
-          zip --junk-paths build/cpc.mpackage README.md cpc.xml LICENSE
+          zip --junk-paths build/cpc.mpackage README.md cpc.xml LICENSE config.lua
       
       - name: Create Release
         id: create_release
