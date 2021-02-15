@@ -15,6 +15,7 @@ jobs:
       - name: Make zip file
         run: |
           mkdir build -p
+          sed -i 's/cpc.version = "0.0.0"/cpc.version = "${{ github.ref }}"/g' cpc.xml
           zip --junk-paths build/cpc.mpackage README.md cpc.xml LICENSE config.lua
       
       - name: Create Release

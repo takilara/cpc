@@ -21,7 +21,8 @@ cpc:handleCommand(cmd,args)</script>
 			<name>CPC_Main_Script</name>
 			<packageName></packageName>
 			<script>cpc = cpc or {}
-cpc.version = "0.0.5"
+-- 0.0.0 is localbuild version, will get replaced by github actions when tagging
+cpc.version = "0.0.0"
 cpc.debug = cpc.debug or false
 cpc.localEcho = cpc.localEcho or true
 cpc.thisProfileName = getProfileName():lower()
