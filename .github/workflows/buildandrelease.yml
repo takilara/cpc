@@ -12,11 +12,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Make zip file
-        run: |
-          mkdir build -p
-          sed -i 's/cpc.version = "0.0.0"/cpc.version = "${{ github.ref }}"/g' cpc.xml
-          zip --junk-paths build/cpc.mpackage README.md cpc.xml LICENSE config.lua
       
       - name: Create Release
         id: create_release
@@ -27,7 +22,13 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           draft: false
-          prerelease: false
+          prerelease: true
+
+      - name: Make zip file
+        run: |
+          mkdir build -p
+          sed -i 's/cpc.version = "0.0.0"/cpc.version = "${{ steps.create_release.outputs.name }}"/g' cpc.xml
+          zip --junk-paths build/cpc.mpackage README.md cpc.xml LICENSE config.lua
   
       - name: Upload Release Asset
         id: upload-release-asset 
