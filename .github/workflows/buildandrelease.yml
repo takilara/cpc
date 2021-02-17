@@ -34,7 +34,7 @@ jobs:
     if: github.event_name == 'push' 
     runs-on: ubuntu-latest  
     needs: test_and_build
-      steps:
+    steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
