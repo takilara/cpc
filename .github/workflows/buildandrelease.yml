@@ -34,7 +34,7 @@ jobs:
       # if workflow was triggered due to a push, then that means we also got a v tag, and can create a release
   release:
     needs: test_and_buid
-    name: Create Release
+    name: Create Release if tagged
     if: github.event_name == 'push' 
     runs-on: ubuntu-latest  
     steps:
