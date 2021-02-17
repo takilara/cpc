@@ -60,7 +60,6 @@ jobs:
           prerelease: false
 
       - name: Upload Release Asset
-        needs: create_release
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
