@@ -16,14 +16,14 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Get the version
-        id: get_version
+        id: get_version1
         run: echo ::set-output name=version::${GITHUB_REF#refs/*/}
 
       - name: Make zip file
         id: build_zip
         run: |
           mkdir build -p
-          sed -i 's/cpc.version = "0.0.0"/cpc.version = "${{ steps.get_version.outputs.version }}"/g' cpc.xml
+          sed -i 's/cpc.version = "0.0.0"/cpc.version = "${{ steps.get_version1.outputs.version }}"/g' cpc.xml
           zip --junk-paths build/cpc.mpackage README.md cpc.xml LICENSE config.lua
       
 
@@ -38,14 +38,14 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Get the version
-        id: get_version
+        id: get_version2
         run: echo ::set-output name=version::${GITHUB_REF#refs/*/}
 
       - name: Make zip file
         id: build_zip
         run: |
           mkdir build -p
-          sed -i 's/cpc.version = "0.0.0"/cpc.version = "${{ steps.get_version.outputs.version }}"/g' cpc.xml
+          sed -i 's/cpc.version = "0.0.0"/cpc.version = "${{ steps.get_version2.outputs.version }}"/g' cpc.xml
           zip --junk-paths build/cpc.mpackage README.md cpc.xml LICENSE config.lua
       
       - name: Create Release
