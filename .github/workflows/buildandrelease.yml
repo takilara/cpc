@@ -8,21 +8,20 @@ on:
 
 jobs:
   build:
-    name: Build And Release
+    name: Test and Build 
+    id: test_and_build
     runs-on: ubuntu-latest
     steps:
+      # Should replace with testing here, keeping get_version and build_zip as they should at least throw some errors if they fail
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Get the version
         id: get_version
-        #run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-        #run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
         run: echo ::set-output name=version::${GITHUB_REF#refs/*/}
 
-      # Any testing steps here
-
       - name: Make zip file
+        id: build_zip
         run: |
           mkdir build -p
           sed -i 's/cpc.version = "0.0.0"/cpc.version = "${{ steps.get_version.outputs.version }}"/g' cpc.xml
@@ -30,8 +29,27 @@ jobs:
       
 
       # if workflow was triggered due to a push, then that means we also got a v tag, and can create a release
-      - name: Create Release
-        if: github.event_name == 'push'
+  release:
+    name: Create Release
+    if: github.event_name == 'push' 
+    runs-on: ubuntu-latest  
+    needs: test_and_build
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=version::${GITHUB_REF#refs/*/}
+
+      - name: Make zip file
+        id: build_zip
+        run: |
+          mkdir build -p
+          sed -i 's/cpc.version = "0.0.0"/cpc.version = "${{ steps.get_version.outputs.version }}"/g' cpc.xml
+          zip --junk-paths build/cpc.mpackage README.md cpc.xml LICENSE config.lua
+        - name: Create Release
+        
         id: create_release
         uses: actions/create-release@v1
         env:
