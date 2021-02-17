@@ -7,9 +7,8 @@ on:
     - 'v*'  
 
 jobs:
-  build:
+  test_and_buid:
     name: Test and Build 
-    id: test_and_build
     runs-on: ubuntu-latest
     steps:
       # Should replace with testing here, keeping get_version and build_zip as they should at least throw some errors if they fail
@@ -30,10 +29,10 @@ jobs:
 
       # if workflow was triggered due to a push, then that means we also got a v tag, and can create a release
   release:
+    needs: test_and_buid
     name: Create Release
     if: github.event_name == 'push' 
     runs-on: ubuntu-latest  
-    needs: test_and_build
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
