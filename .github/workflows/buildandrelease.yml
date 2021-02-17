@@ -20,7 +20,8 @@ jobs:
         run: echo ::set-output name=version::${GITHUB_REF#refs/*/}
 
       - name: Echo version
-        run: echo Version: ${{ steps.get_version1.outputs.version }}
+        run: |
+          echo Version ${{ steps.get_version1.outputs.version }}
 
       - name: Make zip file
         id: build_zip1
