@@ -19,8 +19,11 @@ jobs:
         id: get_version1
         run: echo ::set-output name=version::${GITHUB_REF#refs/*/}
 
+      - name: Echo version
+        run: echo Version: ${{ steps.get_version1.outputs.version }}
+
       - name: Make zip file
-        id: build_zip
+        id: build_zip1
         run: |
           mkdir build -p
           sed -i 's/cpc.version = "0.0.0"/cpc.version = "${{ steps.get_version1.outputs.version }}"/g' cpc.xml
@@ -42,7 +45,7 @@ jobs:
         run: echo ::set-output name=version::${GITHUB_REF#refs/*/}
 
       - name: Make zip file
-        id: build_zip
+        id: build_zip2
         run: |
           mkdir build -p
           sed -i 's/cpc.version = "0.0.0"/cpc.version = "${{ steps.get_version2.outputs.version }}"/g' cpc.xml
