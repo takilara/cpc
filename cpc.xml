@@ -30,6 +30,7 @@ cpc.localEcho = cpc.localEcho or true
 cpc.thisProfileName = getProfileName():lower()
 cpc.downloadPath = getMudletHomeDir().."/cpc downloads/"
 cpc.downloading = false
+cpc.loadedAs = "unknown"
 
 
 
@@ -187,10 +188,16 @@ function cpc:onFileDownloaded(event, ...)
 end
 
 function cpc:onModuleOrPackageLoaded(event,...)
-  print("module loaded")
-  print("check if module or package")
-  display(event)
-  display(arg)
+  --print("module loaded")
+  --print("check if module or package")
+  --display(event)
+  --display(arg)
+  if (event=="sysInstallPackage") and (arg[1]=="Cross Profile Communication") then
+    cpc.loadedAs="package"
+  elseif (event=="sysInstallModule") and (arg[1]=="cpc") then
+    cpc.loadedAs="module"
+  end
+  
 end
 
 function cpc:onTellEvent(event,arg,profile)
