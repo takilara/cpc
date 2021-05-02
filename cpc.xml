@@ -12,7 +12,7 @@ local args = matches[3]
 cpc:handleCommand(cmd,args)</script>
 			<command></command>
 			<packageName></packageName>
-			<regex>^#(?i)(\bbid\b|\bdo\b|\bsay\b|\ball\b|\bhelp\b|\bversion\b|\becho\b|\btell\b)(?-i)\s*(.*)$</regex>
+			<regex>^#(?i)(\bbid\b|\bdo\b|\bcpc\b|\bsay\b|\ball\b|\bhelp\b|\bversion\b|\becho\b|\btell\b)(?-i)\s*(.*)$</regex>
 		</Alias>
 	</AliasPackage>
 	<ActionPackage />
@@ -23,11 +23,13 @@ cpc:handleCommand(cmd,args)</script>
 			<script>cpc = cpc or {}
 -- 0.0.0 is localbuild version, will get replaced by github actions when tagging
 cpc.version = "0.0.0"
+cpc.onlinePath = "https://github.com/takilara/cpc/releases/latest/download/"
 cpc.onlineVersionFile = "https://raw.githubusercontent.com/takilara/cpc/main/versions.lua"
 cpc.debug = cpc.debug or false
 cpc.localEcho = cpc.localEcho or true
 cpc.thisProfileName = getProfileName():lower()
 cpc.downloadPath = getMudletHomeDir().."/cpc downloads/"
+cpc.downloading = false
 
 
 
@@ -49,7 +51,8 @@ function cpc:echo(text)
 end
 
 function cpc:showVersion()
-  cecho(string.format("&lt;cyan&gt;%-50s: %s\n","Cross Profile Communication",cpc.version))
+  local vline = cpc:checkVersion()
+  cecho(string.format("&lt;cyan&gt;%-50s: %s %s\n","Cross Profile Communication",cpc.version,vline))
 end
 
 
@@ -58,6 +61,7 @@ function cpc:showHelp()
   cecho("&lt;cyan&gt;Cross Profile Communication:\n")
   cecho(string.format("&lt;cyan&gt;%-30s- %s\n",string.format(" %s","#HELP"),"Show Helpfile(s)"))
   cecho(string.format("&lt;cyan&gt;%-30s- %s\n",string.format(" %s","#VERSION"),"Show version(s)"))
+  cecho(string.format("&lt;cyan&gt;%-30s- %s\n",string.format(" %s","#CPC UPDATE"),"Upgrade the package"))
   cecho(string.format("&lt;cyan&gt;%-30s- %s\n",string.format(" %s","#ALL &lt;arguments&gt;"),"Send command to all profiles"))
   cecho(string.format("&lt;cyan&gt;%-30s- %s\n",string.format(" %s","#DO &lt;arguments&gt;"),"Send command to all other profiles"))
   cecho(string.format("&lt;cyan&gt;%-30s- %s\n",string.format("   %s","#DO party report"),"Ex: tell all other profiles to execute 'party report'"))
@@ -115,8 +119,10 @@ function cpc:handleCommand(cmd,args)
   elseif (cmd=="bid") then
     raiseGlobalEvent("cpc_bid",args)
     raiseEvent("cpc_bid",args)
+  elseif (cmd=="cpc") and (args:lower()=="update") then
+    cpc:downloadLatestVersion()
   else
-    cecho("&lt;orange&gt;Command '".. string.upper(cmd) .. "' not supported!\n")
+    cecho("&lt;orange&gt;Command '".. string.upper(cmd) .. " ".. string.upper(args) .. "' not supported!\n")
   end
 end
 
@@ -156,9 +162,28 @@ function cpc:onEchoEvent(event,args,profile)
   print()
 end
 
-function cpc:onVersionsDownloaded(event,args,profile)
-  print("Versions file downloaded from github")
-  cpc:checkVersion()
+function cpc:onFileDownloaded(event, ...)
+  --print("onFileDownloaded")
+  if event == "sysDownloadDone" and cpc.downloading then
+    --print("check what type of file")
+    local file = arg[1]
+    --display(file)
+    --display(arg)
+    if string.ends(file,"/versions.lua") then
+      print("Versions file downloaded from github")
+      cpc.downloading=false
+      cpc:checkVersion()
+    elseif string.ends(file,"/cpc.xml") then
+      print("DEPRECATED: New version of CPC downloaded...")
+      cpc.downloading=false
+      --cpc:update_version()
+    elseif string.ends(file,"/cpc.mpackage") then
+      print("New version of CPC downloaded...")
+      cpc.downloading=false
+      cpc:update_version()
+    end
+    
+  end
 end
 
 function cpc:onTellEvent(event,arg,profile)
@@ -183,23 +208,45 @@ end
 
 function cpc:downloadVersionFile()
   print("Download the versions file")
-  
-  
   if not io.exists(cpc.downloadPath) then lfs.mkdir(cpc.downloadPath) end
   local filename = "versions.lua"
+  cpc.downloading=true
   downloadFile(cpc.downloadPath .. filename, cpc.onlineVersionFile)
 end
 
 function cpc:checkVersion()
-  print("Check github version vs local version")
   local path = cpc.downloadPath .. "/versions.lua"
   local versions = {}
   table.load(path, versions)
   local pos = table.index_of(versions, cpc.version) or 0
+  local line = ""
   if pos ~= #versions then
-  print(string.format("CPC is currently &lt;red&gt;%d&lt;reset&gt; versions behind.",#versions - pos))
-  print("To update now, please type: &lt;yellow&gt;#CPC update&lt;reset&gt;")
+    --print(string.format("CPC is currently &lt;red&gt;%d&lt;reset&gt; versions behind.",#versions - pos))
+    --print("To update now, please type: &lt;yellow&gt;#CPC update&lt;reset&gt;")
+    line = "&lt;orange&gt;(".. #versions - pos .. " behind online - ".. versions[#versions] ..")\n \t #CPC UPDATE to upgrade"
+  else
+    line =""
   end
+  return line
+end
+
+function cpc:downloadLatestVersion()
+  print("download new version of cpc")
+  if not io.exists(cpc.downloadPath) then lfs.mkdir(cpc.downloadPath) end
+  local filename = "cpc.mpackage"
+  cpc.downloading=true
+  downloadFile(cpc.downloadPath .. filename, cpc.onlinePath .. filename)
+end
+
+function cpc:update_version()
+  print("Update the version")
+  --local path = profilePath .. "/map downloads/generic_mapper.xml"
+  --uninstallPackage("cpc")   -- remove local instance (module)
+  --uninstallModule("cpc") -- remove local instance (module)
+  uninstallPackage("Cross Profile Communication")
+  
+  installPackage(cpc.downloadPath .. "cpc.mpackage")
+  --installModule
 end
 
 
@@ -208,7 +255,7 @@ cpc.allEventHandler = cpc.allEventHandler or nil
 cpc.bidEventHandler = cpc.bidEventHandler or nil
 cpc.echoEventHandler = cpc.echoEventHandler or nil
 cpc.tellEventHandler = cpc.tellEventHandler or nil
-cpc.downloadVersionHandler = cpc.downloadVersionHandler or nil
+cpc.downloadFileHandler = cpc.downloadFileHandler or nil
 
 
 -- remove existing event handlers before creating new ones
@@ -224,8 +271,8 @@ end
 if cpc.tellEventHandler~=nil then
   killAnonymousEventHandler(cpc.tellEventHandler)
 end
-if cpc.downloadVersionHandler~=nil then
-  killAnonymousEventHandler(cpc.downloadVersionHandler)
+if cpc.downloadFileHandler~=nil then
+  killAnonymousEventHandler(cpc.downloadFileHandler)
 end
 
 -- setup event handlers
@@ -233,7 +280,12 @@ cpc.allEventHandler = registerAnonymousEventHandler("cpc_all","cpc:onCmdAll")
 cpc.bidEventHandler = registerAnonymousEventHandler("cpc_bid","cpc:onBidEvent")
 cpc.echoEventHandler = registerAnonymousEventHandler("cpc_echo","cpc:onEchoEvent")
 cpc.tellEventHandler = registerAnonymousEventHandler("cpc_tell","cpc:onTellEvent")
-cpc.downloadVersionHandler = registerAnonymousEventHandler("sysDownloadDone","cpc:onVersionsDownloaded")</script>
+cpc.downloadFileHandler = registerAnonymousEventHandler("sysDownloadDone","cpc:onFileDownloaded")
+
+local line = cpc:checkVersion()
+if line~="" then
+  cecho(string.format("&lt;orange&gt;Cross Profile Communication is %s",line))
+end</script>
 			<eventHandlerList />
 		</Script>
 	</ScriptPackage>
