@@ -12,7 +12,7 @@ local args = matches[3]
 cpc:handleCommand(cmd,args)</script>
 			<command></command>
 			<packageName></packageName>
-			<regex>#(?i)(\bbid\b|\bdo\b|\bsay\b|\ball\b|\bhelp\b|\bversion\b|\becho\b|\btell\b)(?-i)\s*(.*)$</regex>
+			<regex>^#(?i)(\bbid\b|\bdo\b|\bsay\b|\ball\b|\bhelp\b|\bversion\b|\becho\b|\btell\b)(?-i)\s*(.*)$</regex>
 		</Alias>
 	</AliasPackage>
 	<ActionPackage />
