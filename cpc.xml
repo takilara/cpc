@@ -23,9 +23,12 @@ cpc:handleCommand(cmd,args)</script>
 			<script>cpc = cpc or {}
 -- 0.0.0 is localbuild version, will get replaced by github actions when tagging
 cpc.version = "0.0.0"
+cpc.onlineVersionFile = "https://raw.githubusercontent.com/takilara/cpc/main/versions.lua"
 cpc.debug = cpc.debug or false
 cpc.localEcho = cpc.localEcho or true
 cpc.thisProfileName = getProfileName():lower()
+cpc.downloadPath = getMudletHomeDir().."/cpc downloads/"
+
 
 
 function cpc:log(text)
@@ -48,6 +51,8 @@ end
 function cpc:showVersion()
   cecho(string.format("&lt;cyan&gt;%-50s: %s\n","Cross Profile Communication",cpc.version))
 end
+
+
 
 function cpc:showHelp()
   cecho("&lt;cyan&gt;Cross Profile Communication:\n")
@@ -151,6 +156,11 @@ function cpc:onEchoEvent(event,args,profile)
   print()
 end
 
+function cpc:onVersionsDownloaded(event,args,profile)
+  print("Versions file downloaded from github")
+  cpc:checkVersion()
+end
+
 function cpc:onTellEvent(event,arg,profile)
  local words = {}
   words[1], words[2] = arg:match("(%w+)(.+)")
@@ -171,12 +181,34 @@ function cpc:onTellEvent(event,arg,profile)
   end
 end
 
+function cpc:downloadVersionFile()
+  print("Download the versions file")
+  
+  
+  if not io.exists(cpc.downloadPath) then lfs.mkdir(cpc.downloadPath) end
+  local filename = "versions.lua"
+  downloadFile(cpc.downloadPath .. filename, cpc.onlineVersionFile)
+end
+
+function cpc:checkVersion()
+  print("Check github version vs local version")
+  local path = cpc.downloadPath .. "/versions.lua"
+  local versions = {}
+  table.load(path, versions)
+  local pos = table.index_of(versions, cpc.version) or 0
+  if pos ~= #versions then
+  print(string.format("CPC is currently &lt;red&gt;%d&lt;reset&gt; versions behind.",#versions - pos))
+  print("To update now, please type: &lt;yellow&gt;#CPC update&lt;reset&gt;")
+  end
+end
+
 
 -- CPC Event handlers
 cpc.allEventHandler = cpc.allEventHandler or nil
 cpc.bidEventHandler = cpc.bidEventHandler or nil
 cpc.echoEventHandler = cpc.echoEventHandler or nil
 cpc.tellEventHandler = cpc.tellEventHandler or nil
+cpc.downloadVersionHandler = cpc.downloadVersionHandler or nil
 
 
 -- remove existing event handlers before creating new ones
@@ -192,12 +224,16 @@ end
 if cpc.tellEventHandler~=nil then
   killAnonymousEventHandler(cpc.tellEventHandler)
 end
+if cpc.downloadVersionHandler~=nil then
+  killAnonymousEventHandler(cpc.downloadVersionHandler)
+end
 
 -- setup event handlers
 cpc.allEventHandler = registerAnonymousEventHandler("cpc_all","cpc:onCmdAll")
 cpc.bidEventHandler = registerAnonymousEventHandler("cpc_bid","cpc:onBidEvent")
 cpc.echoEventHandler = registerAnonymousEventHandler("cpc_echo","cpc:onEchoEvent")
-cpc.tellEventHandler = registerAnonymousEventHandler("cpc_tell","cpc:onTellEvent")</script>
+cpc.tellEventHandler = registerAnonymousEventHandler("cpc_tell","cpc:onTellEvent")
+cpc.downloadVersionHandler = registerAnonymousEventHandler("sysDownloadDone","cpc:onVersionsDownloaded")</script>
 			<eventHandlerList />
 		</Script>
 	</ScriptPackage>
