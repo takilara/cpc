@@ -186,6 +186,13 @@ function cpc:onFileDownloaded(event, ...)
   end
 end
 
+function cpc:onModuleOrPackageLoaded(event,...)
+  print("module loaded")
+  print("check if module or package")
+  display(event)
+  display(arg)
+end
+
 function cpc:onTellEvent(event,arg,profile)
  local words = {}
   words[1], words[2] = arg:match("(%w+)(.+)")
@@ -258,6 +265,8 @@ cpc.bidEventHandler = cpc.bidEventHandler or nil
 cpc.echoEventHandler = cpc.echoEventHandler or nil
 cpc.tellEventHandler = cpc.tellEventHandler or nil
 cpc.downloadFileHandler = cpc.downloadFileHandler or nil
+cpc.cpcPackageLoadedHandler = cpc.cpcPackageLoadedHandler or nil
+cpc.cpcModuleLoadedHandler = cpc.cpcModuleLoadedHandler or nil
 
 
 -- remove existing event handlers before creating new ones
@@ -276,6 +285,13 @@ end
 if cpc.downloadFileHandler~=nil then
   killAnonymousEventHandler(cpc.downloadFileHandler)
 end
+if cpc.cpcPackageLoadedHandler~=nil then
+  killAnonymousEventHandler(cpc.cpcPackageLoadedHandler)
+end
+if cpc.cpcModuleLoadedHandler~=nil then
+  killAnonymousEventHandler(cpc.cpcModuleLoadedHandler)
+end
+
 
 -- setup event handlers
 cpc.allEventHandler = registerAnonymousEventHandler("cpc_all","cpc:onCmdAll")
@@ -283,6 +299,8 @@ cpc.bidEventHandler = registerAnonymousEventHandler("cpc_bid","cpc:onBidEvent")
 cpc.echoEventHandler = registerAnonymousEventHandler("cpc_echo","cpc:onEchoEvent")
 cpc.tellEventHandler = registerAnonymousEventHandler("cpc_tell","cpc:onTellEvent")
 cpc.downloadFileHandler = registerAnonymousEventHandler("sysDownloadDone","cpc:onFileDownloaded")
+cpc.cpcModuleLoadedHandler = registerAnonymousEventHandler("sysInstallModule","cpc:onModuleOrPackageLoaded")
+cpc.cpcPackageLoadedHandler = registerAnonymousEventHandler("sysInstallPackage","cpc:onModuleOrPackageLoaded")
 
 cpc:downloadVersionFile()</script>
 			<eventHandlerList />
