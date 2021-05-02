@@ -170,15 +170,15 @@ function cpc:onFileDownloaded(event, ...)
     --display(file)
     --display(arg)
     if string.ends(file,"/versions.lua") then
-      print("Versions file downloaded from github")
+      --print("Versions file downloaded from github")
       cpc.downloading=false
       cpc:checkVersion()
     elseif string.ends(file,"/cpc.xml") then
-      print("DEPRECATED: New version of CPC downloaded...")
+      --print("DEPRECATED: New version of CPC downloaded...")
       cpc.downloading=false
       --cpc:update_version()
     elseif string.ends(file,"/cpc.mpackage") then
-      print("New version of CPC downloaded...")
+      --print("New version of CPC downloaded...")
       cpc.downloading=false
       cpc:update_version()
     end
@@ -207,7 +207,7 @@ function cpc:onTellEvent(event,arg,profile)
 end
 
 function cpc:downloadVersionFile()
-  print("Download the versions file")
+  --print("Download the versions file")
   if not io.exists(cpc.downloadPath) then lfs.mkdir(cpc.downloadPath) end
   local filename = "versions.lua"
   cpc.downloading=true
@@ -217,7 +217,9 @@ end
 function cpc:checkVersion()
   local path = cpc.downloadPath .. "/versions.lua"
   local versions = {}
+  
   table.load(path, versions)
+  --display(versions)
   local pos = table.index_of(versions, cpc.version) or 0
   local line = ""
   if pos ~= #versions then
@@ -282,10 +284,7 @@ cpc.echoEventHandler = registerAnonymousEventHandler("cpc_echo","cpc:onEchoEvent
 cpc.tellEventHandler = registerAnonymousEventHandler("cpc_tell","cpc:onTellEvent")
 cpc.downloadFileHandler = registerAnonymousEventHandler("sysDownloadDone","cpc:onFileDownloaded")
 
-local line = cpc:checkVersion()
-if line~="" then
-  cecho(string.format("&lt;orange&gt;Cross Profile Communication is %s",line))
-end</script>
+cpc:downloadVersionFile()</script>
 			<eventHandlerList />
 		</Script>
 	</ScriptPackage>
