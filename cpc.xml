@@ -4,7 +4,7 @@
 	<TriggerPackage />
 	<TimerPackage />
 	<AliasPackage>
-		<Alias isActive="yes" isFolder="no">
+		<Alias isActive="no" isFolder="no">
 			<name>Capture legal commands</name>
 			<script>local cmd = matches[2]
 local args = matches[3]
@@ -229,7 +229,7 @@ function cpc:downloadVersionFile()
 end
 
 function cpc:checkVersion()
-  local path = cpc.downloadPath .. "/versions.lua"
+  local path = cpc.downloadPath .. "versions.lua"
   local versions = {}
   
   table.load(path, versions)
@@ -311,6 +311,17 @@ cpc.cpcPackageLoadedHandler = registerAnonymousEventHandler("sysInstallPackage",
 
 cpc:downloadVersionFile()</script>
 			<eventHandlerList />
+		</Script>
+		<Script isActive="yes" isFolder="no">
+			<name>OnCPCEcho</name>
+			<packageName></packageName>
+			<script>function OnCPCEcho(event, args)
+  -- Consider moving handlers to separate scripts...
+  --print("OnCPCEcho")
+end</script>
+			<eventHandlerList>
+				<string>cpc_echo</string>
+			</eventHandlerList>
 		</Script>
 	</ScriptPackage>
 	<KeyPackage />
