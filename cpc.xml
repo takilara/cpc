@@ -4,7 +4,7 @@
 	<TriggerPackage />
 	<TimerPackage />
 	<AliasPackage>
-		<Alias isActive="no" isFolder="no">
+		<Alias isActive="yes" isFolder="no">
 			<name>Capture legal commands</name>
 			<script>local cmd = matches[2]
 local args = matches[3]
@@ -159,6 +159,7 @@ function cpc:onBidEvent(event,arg,profile)
 end
 
 function cpc:onEchoEvent(event,args,profile)
+  --print("echo")
   cecho("&lt;cyan&gt;"..args)
   print()
 end
@@ -259,10 +260,36 @@ function cpc:update_version()
   --local path = profilePath .. "/map downloads/generic_mapper.xml"
   --uninstallPackage("cpc")   -- remove local instance (module)
   --uninstallModule("cpc") -- remove local instance (module)
+  cpc:killAllExistingEventHandlers()
+  
   uninstallPackage("Cross Profile Communication")
   
   installPackage(cpc.downloadPath .. "cpc.mpackage")
   --installModule
+end
+
+function cpc:killAllExistingEventHandlers()
+  if cpc.allEventHandler~=nil then
+    killAnonymousEventHandler(cpc.allEventHandler)
+  end
+  if cpc.bidEventHandler~=nil then
+    killAnonymousEventHandler(cpc.bidEventHandler)
+  end
+  if cpc.echoEventHandler~=nil then
+    killAnonymousEventHandler(cpc.echoEventHandler)
+  end
+  if cpc.tellEventHandler~=nil then
+    killAnonymousEventHandler(cpc.tellEventHandler)
+  end
+  if cpc.downloadFileHandler~=nil then
+    killAnonymousEventHandler(cpc.downloadFileHandler)
+  end
+  if cpc.cpcPackageLoadedHandler~=nil then
+    killAnonymousEventHandler(cpc.cpcPackageLoadedHandler)
+  end
+  if cpc.cpcModuleLoadedHandler~=nil then
+    killAnonymousEventHandler(cpc.cpcModuleLoadedHandler)
+  end
 end
 
 
@@ -275,29 +302,10 @@ cpc.downloadFileHandler = cpc.downloadFileHandler or nil
 cpc.cpcPackageLoadedHandler = cpc.cpcPackageLoadedHandler or nil
 cpc.cpcModuleLoadedHandler = cpc.cpcModuleLoadedHandler or nil
 
-
+cpc:killAllExistingEventHandlers()
 -- remove existing event handlers before creating new ones
-if cpc.allEventHandler~=nil then
-  killAnonymousEventHandler(cpc.allEventHandler)
-end
-if cpc.bidEventHandler~=nil then
-  killAnonymousEventHandler(cpc.bidEventHandler)
-end
-if cpc.echoEventHandler~=nil then
-  killAnonymousEventHandler(cpc.echoEventHandler)
-end
-if cpc.tellEventHandler~=nil then
-  killAnonymousEventHandler(cpc.tellEventHandler)
-end
-if cpc.downloadFileHandler~=nil then
-  killAnonymousEventHandler(cpc.downloadFileHandler)
-end
-if cpc.cpcPackageLoadedHandler~=nil then
-  killAnonymousEventHandler(cpc.cpcPackageLoadedHandler)
-end
-if cpc.cpcModuleLoadedHandler~=nil then
-  killAnonymousEventHandler(cpc.cpcModuleLoadedHandler)
-end
+
+
 
 
 -- setup event handlers
