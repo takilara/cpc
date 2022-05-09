@@ -4,13 +4,18 @@ Mudlet Cross Profile Communication package
 ## Description
 
 This package allows you to control several profiles from one profile. It currently supports the following commands:
-* #HELP                        - Show Helpfile(s)
-* #VERSION                     - Show version(s)
-* #ALL &lt;arguments&gt;             - send command to all profiles
-* #DO &lt;arguments&gt;              - send command to all other profiles
-* #BID &lt;profile> &lt;arguments&gt;   - send command to one character (immediate execution)
-* #ECHO &lt;text&gt;                 - show something in all terminals
-* #TELL &lt;profile&gt;              - show something in one particular terminal
+
+| Command                             | API                                | Description                   |
+|-------------------------------------|------------------------------------|-------------------------------|
+| #HELP                               | cpc:showHelp()                     | Show Helpfile(s)              |
+| #VERSION                            | cpc:showVersion()                  | Show version(s)               |
+| #ALL &lt;arguments&gt;              | cpc:handleCommand("all","say hi")  | Send command to all profiles  |
+| #DO &lt;arguments&gt;               | cpc:handleCommand("do","bow")      | send command to all other profiles |
+| #BID &lt;profile> &lt;arguments&gt; | cpc:handleCommand("bid","gandalf cast light at demon") | send command to one character (immediate execution) |
+| #ECHO &lt;text&gt;                  | cpc:handleCommand("echo","Im Dying!!!") | show something in all terminals |
+| #TELL &lt;profile&gt;               | cpc:handleCommand("tell","boromir DIE!!") | show something in one particular terminal |
+
+The #&lt;COMMAND&gt; commands are meant to be used from within the game. To use these mechanics in scripts or aliases, use the API commands
 
 ## Installation
 
