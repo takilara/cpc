@@ -5,7 +5,7 @@ Mudlet Cross Profile Communication package
 
 This package allows you to control several profiles from one profile. It currently supports the following commands:
 
-| Command                             | API                                | Description                   |
+| Command                             | API (commands to use in an alias/trigger) | Description                   |
 |-------------------------------------|------------------------------------|-------------------------------|
 | #HELP                               | cpc:showHelp()                     | Show Helpfile(s)              |
 | #VERSION                            | cpc:showVersion()                  | Show version(s)               |
