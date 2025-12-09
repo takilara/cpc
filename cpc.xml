@@ -127,6 +127,26 @@ function cpc:handleCommand(cmd,args)
   end
 end
 
+function cpc:parseProfileAndArgs(arg)
+  local targetProfile, remainder
+  
+  -- Try double quotes
+  targetProfile, remainder = arg:match('^"([^"]+)"%s*(.*)$')
+  if targetProfile then
+    return targetProfile, remainder
+  end
+  
+  -- Try single quotes
+  targetProfile, remainder = arg:match("^'([^']+)'%s*(.*)$")
+  if targetProfile then
+    return targetProfile, remainder
+  end
+  
+  -- Fall back to space-separated (for backward compatibility)
+  targetProfile, remainder = arg:match("^(%S+)%s*(.*)$")
+  return targetProfile or "", remainder or ""
+end
+
 function cpc:onCmdAll(event,arg,profile)
   cpc:log("onCmdAll()")
   --cpc:log("Event: " .. event)
@@ -140,9 +160,10 @@ end
 
 function cpc:onBidEvent(event,arg,profile)
   local words = {}
-  words[1], words[2] = arg:match("(%w+)(.+)")
-  local targetProfile = words[1]:lower()
-  local cmd = words[2]
+  local targetProfile
+  local cmd
+  targetProfile, cmd = cpc:parseProfileAndArgs(arg)
+  
   -- strip leading and trailing whitespace
   cmd = string.gsub(cmd, '^%s*(.-)%s*$', '%1')
   
@@ -152,7 +173,8 @@ function cpc:onBidEvent(event,arg,profile)
   if profile == nil then
     profile = "Local"
   end
-  if cpc.thisProfileName == targetProfile then
+  --if cpc.thisProfileName == targetProfile then
+  if cpc.thisProfileName:find(targetProfile:lower(), 1, true) then
     cpc:echo("&lt;cyan&gt;" .. profile .. " bad me execute '" .. cmd .. "'")
     expandAlias(cmd)
   end
@@ -203,9 +225,9 @@ end
 
 function cpc:onTellEvent(event,arg,profile)
  local words = {}
-  words[1], words[2] = arg:match("(%w+)(.+)")
-  local targetProfile = words[1]:lower()
-  local text = words[2]
+  local targetProfile
+  local text
+  targetProfile, text = cpc:parseProfileAndArgs(arg)
   -- strip leading and trailing whitespace
   text = string.gsub(text, '^%s*(.-)%s*$', '%1')
   
@@ -215,7 +237,8 @@ function cpc:onTellEvent(event,arg,profile)
   if profile == nil then
     profile = "Local"
   end
-  if cpc.thisProfileName == targetProfile then
+  --if cpc.thisProfileName == targetProfile then
+  if cpc.thisProfileName:find(targetProfile:lower(), 1, true) then
     cecho("&lt;cyan&gt;" .. text)
     print()
   end

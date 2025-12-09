@@ -17,6 +17,18 @@ This package allows you to control several profiles from one profile. It current
 
 The #&lt;COMMAND&gt; commands are meant to be used from within the game. To use these mechanics in scripts or aliases, use the API commands - for example in your alias, instead of doing `send("hi")` you'd do `cpc:handleCommand("bid", "hi")`.
 
+Profile names with hyphens and spaces are now supported, but in the case of profile names with spaces, you will need to quote
+the name. Both double and single quotes are supported though in the cpc:commands you will need to use single quotes. 
+
+Examples:
+
+* `#BID "mage gandalf" cast cone of ice at balrog`
+* `#BID 'mage saruman' cast cone of ice at balrog`
+* `cpc:handleCommand("bid","'rogue jimmy the hand' backstab target1")`
+
+Abbreviations of profile names are also supported, meaning that you can send commands to multiple profiles if these start with the same characters. E.g. if you have profiles such as "Mage-Saruman" and "Mage-Gandalf", you can send a command to both of 
+them by using '#BID mage cast fireball at target'
+
 ## Installation
 
 The package can be installed in multiple ways. Use your preferred method.
