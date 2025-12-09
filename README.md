@@ -15,7 +15,7 @@ This package allows you to control several profiles from one profile. It current
 | #ECHO &lt;text&gt;                  | cpc:handleCommand("echo","Im Dying!!!") | show something in all terminals |
 | #TELL &lt;profile&gt;               | cpc:handleCommand("tell","boromir DIE!!") | show something in one particular terminal |
 
-The #&lt;COMMAND&gt; commands are meant to be used from within the game. To use these mechanics in scripts or aliases, use the API commands
+The #&lt;COMMAND&gt; commands are meant to be used from within the game. To use these mechanics in scripts or aliases, use the API commands - for example in your alias, instead of doing `send("hi")` you'd do `cpc:handleCommand("bid", "hi")`.
 
 ## Installation
 
