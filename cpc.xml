@@ -175,7 +175,7 @@ function cpc:onBidEvent(event,arg,profile)
   end
   --if cpc.thisProfileName == targetProfile then
   if cpc.thisProfileName:find(targetProfile:lower(), 1, true) then
-    cpc:echo("&lt;cyan&gt;" .. profile .. " bad me execute '" .. cmd .. "'")
+    cpc:echo("&lt;cyan&gt;" .. profile .. " bade me execute '" .. cmd .. "'")
     expandAlias(cmd)
   end
 end
