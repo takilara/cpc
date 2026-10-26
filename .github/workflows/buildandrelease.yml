@@ -17,7 +17,7 @@ jobs:
 
       - name: Get the version
         id: get_version1
-        run: echo ::set-output name=version::testing
+        run: echo "version=testing" >> "$GITHUB_OUTPUT"
 
       - name: Echo version
         run: |
@@ -43,7 +43,7 @@ jobs:
 
       - name: Get the version
         id: get_version2
-        run: echo ::set-output name=version::${GITHUB_REF#refs/*/}
+        run: echo "version=${GITHUB_REF#refs/*/}" >> "$GITHUB_OUTPUT"
 
       - name: Make zip file
         id: build_zip2
@@ -58,8 +58,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
 
