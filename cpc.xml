@@ -27,6 +27,8 @@ cpc.onlinePath = "https://github.com/takilara/cpc/releases/latest/download/"
 cpc.onlineVersionFile = "https://raw.githubusercontent.com/takilara/cpc/main/versions.lua"
 cpc.debug = cpc.debug or false
 cpc.localEcho = cpc.localEcho or true
+-- true: a #BID or #TELL target reaches at most one profile (see cpc:isTarget)
+cpc.strictTargets = cpc.strictTargets or false
 cpc.thisProfileName = getProfileName():lower()
 cpc.downloadPath = getMudletHomeDir().."/cpc downloads/"
 cpc.downloading = false
@@ -158,6 +160,51 @@ function cpc:onCmdAll(event,arg,profile)
   expandAlias(arg) 
 end
 
+-- Does a #BID or #TELL target name this profile? With cpc.strictTargets off (the default) a
+-- target is matched as a part of the profile name, so "mage" reaches every open Mage-*
+-- profile. With it on, a target reaches at most one profile: an exact name (case aside), or
+-- else a part of a name that exactly one open profile contains. Several matches send nothing
+-- and the sender lists them; no match is reported in the sender; the other profiles stay
+-- silent (the sender is the local raiseEvent half, which arrives with profile == "Local").
+function cpc:isTarget(target, isSender)
+  target = (target or ""):lower()
+  if not cpc.strictTargets then
+    return cpc.thisProfileName:find(target, 1, true) ~= nil
+  end
+  if target == "" then
+    return false
+  end
+  local open = {}
+  for name, info in pairs(getProfiles()) do
+    if info.loaded then
+      open[#open + 1] = name
+    end
+  end
+  for _, name in ipairs(open) do
+    if name:lower() == target then
+      return cpc.thisProfileName == target
+    end
+  end
+  local matches = {}
+  for _, name in ipairs(open) do
+    if name:lower():find(target, 1, true) then
+      matches[#matches + 1] = name
+    end
+  end
+  if #matches == 1 then
+    return matches[1]:lower() == cpc.thisProfileName
+  end
+  if isSender then
+    if #matches == 0 then
+      cecho("&lt;orange&gt;CPC: no open profile matches '" .. target .. "'\n")
+    else
+      table.sort(matches)
+      cecho("&lt;orange&gt;CPC: '" .. target .. "' matches " .. #matches .. " open profiles (" .. table.concat(matches, ", ") .. "); nothing sent, use more of the name\n")
+    end
+  end
+  return false
+end
+
 function cpc:onBidEvent(event,arg,profile)
   local words = {}
   local targetProfile
@@ -173,8 +220,7 @@ function cpc:onBidEvent(event,arg,profile)
   if profile == nil then
     profile = "Local"
   end
-  --if cpc.thisProfileName == targetProfile then
-  if cpc.thisProfileName:find(targetProfile:lower(), 1, true) then
+  if cpc:isTarget(targetProfile, profile == "Local") then
     cpc:echo("&lt;cyan&gt;" .. profile .. " bade me execute '" .. cmd .. "'")
     expandAlias(cmd)
   end
@@ -237,8 +283,7 @@ function cpc:onTellEvent(event,arg,profile)
   if profile == nil then
     profile = "Local"
   end
-  --if cpc.thisProfileName == targetProfile then
-  if cpc.thisProfileName:find(targetProfile:lower(), 1, true) then
+  if cpc:isTarget(targetProfile, profile == "Local") then
     cecho("&lt;cyan&gt;" .. text)
     print()
   end

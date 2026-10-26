@@ -29,6 +29,23 @@ Examples:
 Abbreviations of profile names are also supported, meaning that you can send commands to multiple profiles if these start with the same characters. E.g. if you have profiles such as "Mage-Saruman" and "Mage-Gandalf", you can send a command to both of 
 them by using '#BID mage cast fireball at target'
 
+With `cpc.strictTargets` set to `true` (see Settings) a `#BID` or `#TELL` target reaches at most
+one profile instead: an exact profile name (any case) wins, otherwise the target must be a part
+of exactly one open profile's name. `#BID mage ...` with both Mage profiles open then reaches
+nobody and the sending profile lists the profiles it matched; a target no profile matches says
+so in the sender; the other profiles stay silent. Use `#ALL` or `#DO` to reach several.
+
+## Settings
+
+Set these in a script of your own that loads before CPC (or at any time from the command line
+with `lua`); CPC keeps a value that is already set:
+
+| Setting | Default | Effect |
+|---|---|---|
+| `cpc.debug` | `false` | Log what CPC does |
+| `cpc.localEcho` | `true` | Echo CPC's own notices in this profile |
+| `cpc.strictTargets` | `false` | A `#BID` or `#TELL` target reaches at most one profile (above) |
+
 ## Installation
 
 The package can be installed in multiple ways. Use your preferred method.
